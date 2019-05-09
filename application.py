@@ -8,7 +8,6 @@ import uuid
 import ssl
 import json
 
-
 app = Flask(__name__)
 
 
@@ -53,10 +52,8 @@ def post_review():
 
 def get_audio_blob(blob_name):
     try:
-        my_account_key = "Pym9tZBPZgtfy4m84YbYQ37HJNJq4SfmvpJW8DyDkvWcTjfkwNABoV7nWoSZlcRRQSD7sMiJQMf3003nmQjtKA=="
-        # os.getenv('BLOB_STORAGE_KEY')
         block_blob_service = BlockBlobService(
-            account_name='cch5blobstorage', account_key=my_account_key)
+            account_name='cch5blobstorage', account_key=os.getenv('BLOB_STORAGE_KEY'))
         container_name = 'review-audio-blobs'
         return block_blob_service.get_blob_to_text(container_name, blob_name).content
     except:
@@ -66,9 +63,7 @@ def get_audio_blob(blob_name):
 @app.route('/api/reviews', methods=['GET'])
 def get_reviews_content():
 
-    # client = pymongo.MongoClient(os.getenv("CUSTOMCONNSTR_MONGOURL"))
-    URL = "mongodb://cloud-computing-homework-5-db:ytQRJXRuos4Bu7zWAvbraicCh0CVjwoekMr4MBXw2Ad35ZLOjlhfTyRoP2Hsu1bUYFaKCWLijUYv4hLoRRpAeA==@cloud-computing-homework-5-db.documents.azure.com:10255/?ssl=true&replicaSet=globaldb"
-    client = pymongo.MongoClient(URL, ssl_cert_reqs=ssl.CERT_NONE)
+    client = pymongo.MongoClient(os.getenv("CUSTOMCONNSTR_MONGOURL"))
 
     db = client['cloud-computing-homework-5-db']
     collection = db['reviews']
@@ -86,7 +81,7 @@ def get_reviews_content():
 
         if "file-name" in elem.keys():
             obj["audio"] = get_audio_blob(
-                "ecd97de8-7284-11e9-b833-0242ac100102")
+                elem["file-name"])
         results.append(json.dumps(obj))
 
     return json.dumps(results)
