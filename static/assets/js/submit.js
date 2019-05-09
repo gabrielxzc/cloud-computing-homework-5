@@ -47,6 +47,7 @@ recordingButton.addEventListener("click", function() {
 
   if (recordingButton.classList.contains("recording-button-after--active")) {
     recorderGlobal.stopRecording(function() {
+      statusMessagePara.innerText = "Your review is beeing posted ...";
       let blob = recorderGlobal.getBlob();
       let tracks = streamGlobal.getTracks();
 
