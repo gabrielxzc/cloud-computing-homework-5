@@ -1,4 +1,8 @@
 from flask import Flask
+from flask import request
+import pymongo
+import os
+import json
 
 app = Flask(__name__)
 
@@ -16,3 +20,24 @@ def get_submit_page():
 @app.route('/reviews', methods=['GET'])
 def get_reviews_page():
     return app.send_static_file('pages/reviews.html')
+
+
+@app.route('/api/review', methods=['POST'])
+def post_review():
+    data = request.get_json()
+
+    if 'text' in data:
+        client = pymongo.MongoClient(os.getenv("MONGOURL"))
+
+        db = client['cloud-computing-homework-5-db']
+        db.authenticate(name=os.getenv("MONGO_USERNAME"),
+                        password=os.getenv("MONGO_PASSWORD"))
+        collection = db['reviews']
+
+        collection.insert_one(data)
+    elif 'audio' in data:
+        pass
+    else:
+        return '', 400
+
+    return '', 201
