@@ -27,11 +27,9 @@ def post_review():
     data = request.get_json()
 
     if 'text' in data:
-        client = pymongo.MongoClient(os.getenv("MONGOURL"))
+        client = pymongo.MongoClient(os.getenv("CUSTOMCONNSTR_MONGOURL"))
 
         db = client['cloud-computing-homework-5-db']
-        db.authenticate(name=os.getenv("MONGO_USERNAME"),
-                        password=os.getenv("MONGO_PASSWORD"))
         collection = db['reviews']
 
         collection.insert_one(data)
