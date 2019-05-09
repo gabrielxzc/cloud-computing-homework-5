@@ -4,6 +4,8 @@ var recordingButton = document.getElementsByClassName(
 var submitReviewButton = document.getElementsByClassName("submit-button")[0];
 var userReviewTextArea = document.getElementById("user-review-textarea");
 var statusMessagePara = document.getElementById("status-message");
+var recorderGlobal;
+var streamGlobal;
 
 submitReviewButton.addEventListener("click", function() {
   statusMessagePara.innerText = "";
@@ -38,28 +40,66 @@ submitReviewButton.addEventListener("click", function() {
   xhttp.send(JSON.stringify(review));
 });
 
-recordingButton.addEventListener("click", async function() {
-  if (
-    recordingButton.classList.contains("recording-button-after--active") ||
-    recordingButton.classList.contains("recording-button-after--loading")
-  ) {
+recordingButton.addEventListener("click", function() {
+  if (recordingButton.classList.contains("recording-button-after--loading")) {
+    return;
+  }
+
+  if (recordingButton.classList.contains("recording-button-after--active")) {
+    recorderGlobal.stopRecording(function() {
+      let blob = recorderGlobal.getBlob();
+      let tracks = streamGlobal.getTracks();
+
+      tracks.forEach(function(track) {
+        track.stop();
+      });
+
+      recordingButton.classList.toggle("recording-button-after--active");
+      recordingButton.classList.toggle("recording-button-after--loading");
+
+      var reader = new FileReader();
+      reader.readAsDataURL(blob);
+
+      reader.onloadend = function() {
+        base64data = reader.result;
+
+        review = {
+          audio: base64data
+        };
+
+        let xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+          if (this.readyState == 4) {
+            if (this.status == 201) {
+              statusMessagePara.innerText =
+                "Your review was successfully posted!";
+            } else {
+              statusMessagePara.innerText =
+                "Something went wrong and we could not post your review. Please try again later!";
+            }
+          }
+
+          recordingButton.classList.toggle("recording-button-after--loading");
+        };
+
+        xhttp.open("POST", "/api/review", true);
+        xhttp.setRequestHeader("Content-type", "application/json");
+        xhttp.send(JSON.stringify(review));
+      };
+    });
+
     return;
   }
 
   recordingButton.classList.toggle("recording-button-after--active");
-
-  const sleep = m => new Promise(r => setTimeout(r, m));
-  await sleep(3000);
-
-  recordingButton.classList.toggle("recording-button-after--active");
-
-  /*
   navigator.mediaDevices
     .getUserMedia({
       audio: true
     })
-    .then(async function(stream) {
-      let recorder = RecordRTC(stream, {
+    .then(function(stream) {
+      streamGlobal = stream;
+
+      recorder = RecordRTC(stream, {
         type: "audio",
         mimeType: "audio/wav",
         recorderType: StereoAudioRecorder,
@@ -67,46 +107,7 @@ recordingButton.addEventListener("click", async function() {
         desiredSampRate: 16000
       });
 
+      recorderGlobal = recorder;
       recorder.startRecording();
-
-      const sleep = m => new Promise(r => setTimeout(r, m));
-      await sleep(3000);
-
-      recorder.stopRecording(function() {
-        let blob = recorder.getBlob();
-
-        let tracks = stream.getTracks();
-
-        tracks.forEach(function(track) {
-          track.stop();
-        });
-
-        recordingButton.classList.toggle("recording-button-after--active");
-        recordingButtonBackground.classList.toggle(
-          "recording-button-before--active"
-        );
-        tweetsContainer.classList.toggle("tweets-container--active");
-
-        recordingButton.classList.toggle("recording-button-after--loading");
-
-        let xhttp = new XMLHttpRequest();
-
-        xhttp.onreadystatechange = function() {
-          if (this.readyState == 4) {
-            if (this.status == 200) {
-              appendNewResponse(this.responseText);
-            } else {
-              appendNewResponse({
-                isError: true
-              });
-            }
-          }
-        };
-
-        xhttp.open("POST", "thought", true);
-        xhttp.setRequestHeader("Content-type", "application/octet-stream");
-        xhttp.send(blob);
-      });
     });
-    */
 });

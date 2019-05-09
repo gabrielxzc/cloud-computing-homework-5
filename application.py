@@ -3,6 +3,8 @@ from flask import request
 import pymongo
 import os
 import json
+from azure.storage.blob import BlockBlobService
+import uuid
 
 app = Flask(__name__)
 
@@ -27,14 +29,18 @@ def post_review():
     data = request.get_json()
 
     if 'text' in data:
-        client = pymongo.MongoClient(os.getenv("CUSTOMCONNSTR_MONGOURL"))
+        client = pymongo.MongoClient(os.getenv('CUSTOMCONNSTR_MONGOURL'))
 
         db = client['cloud-computing-homework-5-db']
         collection = db['reviews']
 
         collection.insert_one(data)
     elif 'audio' in data:
-        pass
+        block_blob_service = BlockBlobService(
+            account_name='cch5blobstorage', account_key=os.getenv('BLOB_STORAGE_KEY'))
+        container_name = 'review-audio-blobs'
+        block_blob_service.create_blob_from_text(
+            container_name, uuid.uuid1(), data['audio'])
     else:
         return '', 400
 
