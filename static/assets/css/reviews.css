@@ -1,0 +1,43 @@
+@font-face {
+  font-family: blenderpro;
+  src: url("../fonts/blenderpro/blenderpro-medium-webfont.woff");
+}
+
+body {
+  padding-top: 50px;
+  background: #454a59;
+  text-align: center;
+  font-family: blenderpro;
+}
+
+h1 {
+  color: whitesmoke;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+table {
+  margin: auto;
+  margin-top: 50px;
+  border: 1px;
+  width: 80%;
+  color: whitesmoke;
+}
+
+thead {
+  font-weight: bold;
+  font-size: 1.5em;
+}
+
+tr {
+  width: 70%;
+}
+
+td {
+  text-align: center;
+  font-size: 1.5em;
+}
+
+audio {
+  outline: none;
+}
