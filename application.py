@@ -86,7 +86,7 @@ def post_review():
     data = request.get_json()
 
     if 'text' in data:
-        data["emo"] = get_emo(data["text"])
+        data["analysis"] = get_emo(data["text"])
         client = pymongo.MongoClient(os.getenv('CUSTOMCONNSTR_MONGOURL'))
 
         db = client['cloud-computing-homework-5-db']
