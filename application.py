@@ -8,7 +8,7 @@ import uuid
 import ssl
 import json
 import base64
-import azure.cognitiveservices.speech as speechsdk
+# import azure.cognitiveservices.speech as speechsdk
 import http.client, urllib.request, urllib.error, base64, json, ssl
 
 app = Flask(__name__)
@@ -29,29 +29,29 @@ def get_reviews_page():
     return app.send_static_file('pages/reviews.html')
 
 
-def get_speech_to_text(blob_id):
-    block_blob_service = BlockBlobService(account_name = 'cch5blobstorage', account_key = 'fQUKPyg1mEQEMatdm3FO55wItisgBrlRJ7olQzIFgCyx6TjxKrPEcC7Yn7PQ6bRANn9mLpMAAZRCCAGhU/MuPA==') 
-    container_name = 'review-audio-blobs'
+# def get_speech_to_text(blob_id):
+#     block_blob_service = BlockBlobService(account_name = 'cch5blobstorage', account_key = 'fQUKPyg1mEQEMatdm3FO55wItisgBrlRJ7olQzIFgCyx6TjxKrPEcC7Yn7PQ6bRANn9mLpMAAZRCCAGhU/MuPA==') 
+#     container_name = 'review-audio-blobs'
 
-    print("\nDownloading blob to wav_file.wav")
-    block_blob_service.get_blob_to_path(container_name, blob_id, "wav_file.wav")
+#     print("\nDownloading blob to wav_file.wav")
+#     block_blob_service.get_blob_to_path(container_name, blob_id, "wav_file.wav")
     
 
-    speech_key, service_region = "9d029bf416044e47b76939a0dc854001", "westus"
-    speech_config = speechsdk.SpeechConfig(subscription=speech_key, region=service_region)
+#     speech_key, service_region = "9d029bf416044e47b76939a0dc854001", "westus"
+#     speech_config = speechsdk.SpeechConfig(subscription=speech_key, region=service_region)
 
-    audio_config = speechsdk.audio.AudioConfig(filename="wav_file.wav")
-    speech_recognizer = speechsdk.SpeechRecognizer(speech_config=speech_config, audio_config=audio_config)
+#     audio_config = speechsdk.audio.AudioConfig(filename="wav_file.wav")
+#     speech_recognizer = speechsdk.SpeechRecognizer(speech_config=speech_config, audio_config=audio_config)
 
-    result = speech_recognizer.recognize_once()
+#     result = speech_recognizer.recognize_once()
 
-    # Checks result.
-    if result.reason == speechsdk.ResultReason.RecognizedSpeech:
-        return result.text
-    elif result.reason == speechsdk.ResultReason.NoMatch:
-        return "No speech could be recognized"
-    elif result.reason == speechsdk.ResultReason.Canceled:
-        return "Speech Recognition canceled"
+#     # Checks result.
+#     if result.reason == speechsdk.ResultReason.RecognizedSpeech:
+#         return result.text
+#     elif result.reason == speechsdk.ResultReason.NoMatch:
+#         return "No speech could be recognized"
+#     elif result.reason == speechsdk.ResultReason.Canceled:
+#         return "Speech Recognition canceled"
     
 
 def get_emo(text):
