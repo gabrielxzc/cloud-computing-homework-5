@@ -103,6 +103,7 @@ def post_review():
         block_blob_service.create_blob_from_text(
             container_name, blob_id, data['audio'])
         # print(get_speech_to_text(blob_id))
+        #print("push")
     else:
         return '', 400
 
